@@ -1,67 +1,85 @@
 <script lang="ts">
+import { untrack } from "svelte";
+import uPlot from "uplot";
+
 export type PlotProps = {
   data: number[][];
+  width: number;
+  height: number;
 };
 
 const {
   data,
-  height,
   width,
+  height,
 }: PlotProps = $props();
 
-let canvas = $state();
+const LEGEND_HEIGHT = 48;
 
-const colors = [
-  "red",
-  "blue",
-  "green",
-  "purple",
-  "cyan",
-  "yellow",
-];
+let container: HTMLDivElement;
+let plot;
 
 $effect(() => {
-  if (!canvas) return;
+  const opts = {
+    width: untrack(() => width),
+    height: untrack(() => height),
 
-  const ctx = canvas.getContext("2d");
+    scales: {
+      x: {
+        time: false,
+      },
+    },
 
-  const xs = data[0];
-  const xMin = Math.min(...xs);
-  const xMax = Math.max(...xs);
-  const xRange = xMax - xMin;
+    series: [
+      {},
 
-  const allY = data.slice(1).flat()
-  const yMin = allY.reduce((acc, current) => Math.min(acc, current), Infinity);
-  const yMax = allY.reduce((acc, current) => Math.max(acc, current), -Infinity);
-  const yRange = yMax - yMin;
+      {
+        label: "sin(x)",
+        stroke: "blue",
+        width: 2,
+      },
 
-  for (let i = 1; i < data.length; i++) {
-    const ys = data[i];
-    ctx.strokeStyle = colors[(i - 1) % colors.length];
-    ctx.lineWidth = 2;
+      {
+        label: "cos(x)",
+        stroke: "red",
+        width: 2,
+      },
 
-    ctx.beginPath();
+      {
+        label: "sin(2x)",
+        stroke: "green",
+        width: 2,
+      },
+    ],
+  };
 
-    for (let j = 0; j < xs.length; j++) {
-      const x = Math.round((xs[j] - xMin) / xRange * width) + 0.5;
-      const y = Math.round(height - (ys[j] - yMin) / yRange * height) + 0.5;
-      if (j === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    }
+  plot = new uPlot(opts, data, container);
 
-    ctx.stroke();
-  }
+  return () => plot.destroy();
+});
+
+$effect(() => {
+  if (!plot) return;
+  plot.setSize({ width, height: height - LEGEND_HEIGHT });
 });
 </script>
 
-<canvas bind:this={canvas} width={width} height={height} />
+<div class="container2">
+  <div class="container" bind:this={container} />
+</div>
 
 <style>
-canvas {
+.container2 {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+.container {
   position: absolute;
-  background-color: transparent;
+  inset: 0;
 }
 </style>

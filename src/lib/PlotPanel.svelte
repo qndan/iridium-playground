@@ -15,7 +15,7 @@ const data = [
 </script>
 
 <div class="container" bind:clientWidth={width} bind:clientHeight={height}>
-  <Plot width={width} height={height} data={data} />
+  <Plot width={width} height={height} title="Concentrations" data={data} />
 </div>
 
 <style>
