@@ -16,9 +16,11 @@
     "svelte": "^5.56.10",
     "svelte-check": "^4.7.6",
     "typescript": "~6.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vite-plugin-node-polyfills": "^0.28.0"
   },
   "dependencies": {
+    "antimony-language": "file:antimony-language-1.0.0.tgz",
     "uplot": "^1.6.32"
   }
 }

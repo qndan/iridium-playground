@@ -16,7 +16,7 @@ const id = $props.id();
 </script>
 
 <div class="slider">
-  <label for={id}>{name}</label>
+  <label class="name" for={id}>{name}</label>
   <input class="range" id={id} name={id} type="range" min={min} max={max} bind:value />
 
   <label for="{id}-value">Value</label>
@@ -35,6 +35,10 @@ const id = $props.id();
   flex-direction: row;
   align-items: center;
   gap: var(--spacing-sm);
+}
+
+.name {
+  min-width: 30px;
 }
 
 .range {

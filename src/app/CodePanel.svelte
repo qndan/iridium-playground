@@ -1,9 +1,9 @@
 <script>
-let code = $state("A = B");
+import { code } from "./state.svelte.ts";
 </script>
 
 <div class="container">
-  <textarea class="code" bind:value={code} />
+  <textarea class="code" bind:value={code.value} />
 </div>
 
 <style>

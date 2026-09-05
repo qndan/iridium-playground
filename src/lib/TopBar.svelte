@@ -1,3 +1,0 @@
-<div>
-  top bar
-</div>

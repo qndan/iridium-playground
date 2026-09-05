@@ -1,6 +1,8 @@
 <script lang="ts">
 import { untrack } from "svelte";
 import uPlot from "uplot";
+import { variables, columns } from "./state.svelte.ts";
+import { TIME_NAME } from "antimony-language";
 
 export type PlotProps = {
   data: number[][];
@@ -15,14 +17,43 @@ const {
 }: PlotProps = $props();
 
 const LEGEND_HEIGHT = 48;
+const COLORS = [
+  "red",
+  "green",
+  "blue",
+  "yellow",
+  "cyan",
+  "magenta",
+];
 
 let container: HTMLDivElement;
 let plot;
 
+function getSeries() {
+  if (columns.value.length <= 0) {
+    return [{}, {}];
+  } else {
+    return variables.value.map(({name, visible}, i) => (name === TIME_NAME ? {} : {
+      label: name,
+      stroke: COLORS[(i - 1) % COLORS.length],
+      width: 3,
+      show: visible,
+    }));
+  }
+}
+
+function getData() {
+  if (columns.value.length <= 0) {
+    return [[0], [0]]
+  } else {
+    return $state.snapshot(columns.value).map(col => col.values);
+  }
+}
+
 $effect(() => {
   const opts = {
     width: untrack(() => width),
-    height: untrack(() => height),
+    height: untrack(() => height - LEGEND_HEIGHT),
 
     scales: {
       x: {
@@ -30,30 +61,10 @@ $effect(() => {
       },
     },
 
-    series: [
-      {},
-
-      {
-        label: "sin(x)",
-        stroke: "blue",
-        width: 2,
-      },
-
-      {
-        label: "cos(x)",
-        stroke: "red",
-        width: 2,
-      },
-
-      {
-        label: "sin(2x)",
-        stroke: "green",
-        width: 2,
-      },
-    ],
+    series: getSeries(),
   };
 
-  plot = new uPlot(opts, data, container);
+  plot = new uPlot(opts, untrack(getData), container);
 
   return () => plot.destroy();
 });
@@ -61,6 +72,11 @@ $effect(() => {
 $effect(() => {
   if (!plot) return;
   plot.setSize({ width, height: height - LEGEND_HEIGHT });
+});
+
+$effect(() => {
+  if (!plot) return;
+  plot.setData(getData());
 });
 </script>
 
