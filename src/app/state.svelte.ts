@@ -11,7 +11,7 @@ export type Variable = {
 };
 
 export const code = $state({
-  value: "A + B -> C; A * k1\nA = 10; B = 20; C = 0\nk1 = 2"
+  value: "A -> C; A * k1\nB -> C; B * k2\nA = 10; B = 20; C = 0\nk1 = 2; k2 = 3"
 });
 
 export const variables = $state<{value: Variable[]}>({
