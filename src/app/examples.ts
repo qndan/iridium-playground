@@ -29,9 +29,6 @@ k1 = 0.25
 k2 = 0.5
 \`);
 
-// Show the model's available ids in the results panel.
-Demo.list(simulator.getIds(), "Model ids");
-
 // Run the model and plot its baseline behavior.
 Demo.plot(simulator.simulate(0, 20, 200), "A simple reaction");
 
@@ -72,39 +69,6 @@ Demo.plot(result, "BIOMD0000000042");
 Demo.table(result, "Simulation data");`,
   },
   {
-    id: "species-sliders",
-    name: "Floating species sliders",
-    source: `// Create a simulator and load a model with multiple floating species.
-const sim = await Iridium.createSimulator();
-await sim.loadAntimony(\`
-A -> B; k1 * A
-B -> C; k2 * B
-A = 10
-B = 5
-C = 2
-k1 = 0.25
-k2 = 0.5
-\`);
-
-// Get the names of all species whose values can change during the simulation.
-const speciesIds = sim.model.getFloatingSpeciesIds();
-
-for (const speciesId of speciesIds) {
-  // Read the starting value so the slider range fits this species.
-  const initialValue = sim.getValue(speciesId);
-  const maxValue = Math.max(initialValue * 2, 1);
-
-  // Define a slider named after the species and read its current value.
-  const value = Demo.slider(0, maxValue, maxValue / 100, speciesId);
-
-  // Apply the slider value to the simulator before running it.
-  sim.setValue(speciesId, value);
-}
-
-// Plot the simulation after all slider values have been applied.
-Demo.plot(sim.simulate(0, 20, 200), "Simulation with adjustable species");`,
-  },
-  {
     id: "selection-list",
     name: "Selection list",
     source: `// Create a small model with two species and one rate parameter.
@@ -122,39 +86,6 @@ const selectedResults = sim.simulate(0, 10, 12, ["time", "S", "P"]);
 
 // Display the selected columns as a readable table.
 Demo.table(selectedResults, "Selected time course");`,
-  },
-  {
-    id: "parameter-scan",
-    name: "Scan a parameter",
-    source: `// Run the same model repeatedly with different values for "rate".
-const sim = await Iridium.createSimulator();
-await sim.loadAntimony(\`
-A -> B; rate * A
-A = 10
-B = 0
-rate = 0.1
-\`);
-
-// An array stores each product trajectory so we can plot them together.
-const trajectories = [];
-// All simulations use the same time points, so one time column is enough.
-let time;
-
-// Try rates from 0.1 through 1.0. The loop runs once for each rate.
-for (let rate = 0.1; rate <= 1; rate += 0.1) {
-  // Start each run from the original initial state.
-  sim.reset();
-  // Round the value to avoid displaying floating-point values like 0.3000000001.
-  sim.setValue("rate", Number(rate.toFixed(1)));
-  // Run the simulation and keep the time and product (B) columns.
-  const result = sim.simulate(0, 10, 100);
-  time ??= result.sliceColumn(0);
-  trajectories.push(result.sliceColumn(2));
-}
-
-// The first column is the shared x-axis; every remaining column is one rate.
-// The "..." spreads the saved trajectories into the plot's column list.
-Demo.plot([time, ...trajectories], "Product trajectories across rates");`,
   },
   {
     id: "model-inspection",
@@ -179,5 +110,38 @@ Demo.list(sim.model.getReactionIds(), "Reactions");
 
 // This final list contains the values that can be requested in a time course.
 Demo.list(sim.model.getAllTimeCourseComponentIds(), "Time-course components");`,
+  },
+  {
+    id: "species-sliders",
+    name: "Floating species sliders",
+    source: `// Create a simulator and load a model with multiple floating species.
+const sim = await Iridium.createSimulator();
+await sim.loadAntimony(\`
+A -> B; k1 * A
+B -> C; k2 * B
+A = 10
+B = 5
+C = 2
+k1 = 0.25
+k2 = 0.5
+\`);
+
+// Get the names of all species whose values can change during the simulation.
+const speciesIds = sim.model.getFloatingSpeciesIds();
+
+for (const id of speciesIds) {
+  // Read the starting value so the slider range fits this species.
+  const initialValue = sim.getValue(id);
+  const maxValue = Math.max(initialValue * 2, 1);
+
+  // Define a slider named after the species and read its current value.
+  const value = Demo.slider(0, maxValue, maxValue / 100, id);
+
+  // Apply the slider value to the simulator before running it.
+  sim.setValue(id, value);
+}
+
+// Plot the simulation after all slider values have been applied.
+Demo.plot(sim.simulate(0, 20, 200), "Simulation with adjustable species");`,
   },
 ];
