@@ -69,20 +69,6 @@
   onDestroy(() => plot?.destroy());
 </script>
 
-<div class="plot-frame" bind:clientWidth={width} bind:clientHeight={height}>
-  <div class="plot-target" bind:this={container}></div>
+<div class="h-plot min-h-plot w-full overflow-hidden" bind:clientWidth={width} bind:clientHeight={height}>
+  <div class="size-full" bind:this={container}></div>
 </div>
-
-<style>
-  .plot-frame {
-    width: 100%;
-    height: 300px;
-    min-height: 220px;
-    overflow: hidden;
-  }
-
-  .plot-target {
-    width: 100%;
-    height: 100%;
-  }
-</style>

@@ -11,47 +11,14 @@
   let { title, badge, headerActions, children }: Props = $props();
 </script>
 
-<article class="result-card">
-  <div class="result-card-heading">
-    <h3>{title}</h3>
+<article class="shrink-0 overflow-hidden rounded-panel border border-result-border bg-result-bg">
+  <div class="flex min-h-[34px] items-center justify-between border-b border-result-heading-border px-2.75">
+    <h3 class="m-0 text-11 font-semibold text-result-heading-text">{title}</h3>
     {#if headerActions}
       {@render headerActions()}
     {:else if badge}
-      <span class="result-type">{badge}</span>
+      <span class="font-mono text-3xs tracking-wide text-subtle">{badge}</span>
     {/if}
   </div>
   {@render children()}
 </article>
-
-<style>
-  .result-card {
-    flex: 0 0 auto;
-    overflow: hidden;
-    border: 1px solid var(--result-border);
-    border-radius: var(--border-radius);
-    background: var(--result-bg);
-  }
-
-  .result-card-heading {
-    display: flex;
-    min-height: 34px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 11px;
-    border-bottom: 1px solid var(--result-heading-border);
-  }
-
-  .result-card-heading h3 {
-    margin: 0;
-    color: var(--result-heading-text);
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  .result-type {
-    color: var(--subtle);
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.4px;
-  }
-</style>

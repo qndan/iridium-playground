@@ -22,7 +22,13 @@
 
 <button
   type="button"
-  class={`button ${variant}`}
+  class={`inline-flex shrink-0 items-center justify-center rounded-panel border border-border bg-surface text-secondary transition-colors duration-150 ease-out hover:border-button-border-hover hover:bg-button-hover hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary disabled:cursor-not-allowed disabled:opacity-55 ${
+    variant === "primary"
+      ? "min-h-7.5 gap-1.75 border-tag-border bg-surface-raised px-2.75 text-11 font-medium text-primary"
+      : variant === "secondary"
+        ? "min-h-6.25 border-result-border bg-surface-soft px-2 text-2xs"
+        : "size-7 p-0"
+  }`}
   {disabled}
   {onclick}
   aria-label={ariaLabel}
@@ -30,63 +36,3 @@
 >
   {@render children()}
 </button>
-
-<style>
-  .button {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    background: var(--surface);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition:
-      background-color 120ms ease,
-      border-color 120ms ease,
-      color 120ms ease;
-  }
-
-  .button:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--surface-raised) 96%, var(--text-primary) 4%);
-    border-color: color-mix(in srgb, var(--border) 92%, var(--text-primary) 8%);
-    color: var(--text-primary);
-  }
-
-  .button:focus-visible {
-    outline: 2px solid var(--text-secondary);
-    outline-offset: 2px;
-  }
-
-  .button:disabled {
-    cursor: not-allowed;
-    opacity: 0.55;
-  }
-
-  .button.primary {
-    min-height: 30px;
-    gap: 7px;
-    padding: 0 11px;
-    border-color: var(--tag-border);
-    background: var(--surface-raised);
-    color: var(--text-primary);
-    font-size: 11px;
-    font-weight: 500;
-  }
-
-  .button.secondary {
-    min-height: 25px;
-    padding: 0 8px;
-    border-color: var(--result-border);
-    background: var(--surface-soft);
-    font-size: 10px;
-  }
-
-  .button.icon {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-  }
-
-</style>

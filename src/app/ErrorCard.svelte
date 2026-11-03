@@ -6,52 +6,10 @@
   let { message }: Props = $props();
 </script>
 
-<div class="error-card" role="alert">
-  <div class="error-title"><span aria-hidden="true">!</span> Execution error</div>
-  <pre>{message}</pre>
+<div class="shrink-0 overflow-hidden rounded-panel border border-error-border bg-error-bg" role="alert">
+  <div class="flex min-h-10 items-center gap-2 border-b border-error-heading-border px-3 text-11 font-semibold text-error-heading-text">
+    <span class="grid size-4 place-items-center rounded-full bg-error-icon-bg font-mono text-2xs text-error-icon-text" aria-hidden="true">!</span>
+    Execution error
+  </div>
+  <pre class="m-0 whitespace-pre-wrap wrap-anywhere p-3 font-mono text-11 leading-relaxed text-error-text">{message}</pre>
 </div>
-
-<style>
-  .error-card {
-    flex: 0 0 auto;
-    overflow: hidden;
-    border: 1px solid var(--error-border);
-    border-radius: var(--border-radius);
-    background: var(--error-bg);
-  }
-
-  .error-title {
-    display: flex;
-    min-height: 40px;
-    align-items: center;
-    gap: 8px;
-    padding: 0 13px;
-    border-bottom: 1px solid var(--error-heading-border);
-    color: var(--error-heading-text);
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  .error-title span {
-    display: grid;
-    width: 16px;
-    height: 16px;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--error-icon-bg);
-    color: var(--error-icon-text);
-    font-family: var(--mono);
-    font-size: 10px;
-  }
-
-  pre {
-    margin: 0;
-    padding: 13px;
-    color: var(--error-text);
-    font-family: var(--mono);
-    font-size: 11px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-  }
-</style>

@@ -20,49 +20,12 @@
   }: Props = $props();
 </script>
 
-<section class="pane" class:scrollable bind:this={element} aria-label={ariaLabel}>
-  <div class="pane-heading">
-    <h2>{title}</h2>
+<section class={`flex min-h-0 min-w-0 flex-col rounded-panel border border-border bg-surface shadow-pane ${scrollable ? "overflow-auto overscroll-contain" : "overflow-hidden"}`} bind:this={element} aria-label={ariaLabel}>
+  <div class="flex min-h-10 shrink-0 items-center justify-between border-b border-border px-3">
+    <h2 class="m-0 text-xs font-semibold tracking-tight text-primary">{title}</h2>
     {#if headerActions}
       {@render headerActions()}
     {/if}
   </div>
   {@render children()}
 </section>
-
-<style>
-  .pane {
-    display: flex;
-    min-width: 0;
-    min-height: 0;
-    flex-direction: column;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    background: var(--surface);
-    box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
-  }
-
-  .pane-heading {
-    display: flex;
-    min-height: 40px;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .pane-heading h2 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: -0.15px;
-  }
-
-  .pane.scrollable {
-    overflow: auto;
-    overscroll-behavior: contain;
-  }
-</style>

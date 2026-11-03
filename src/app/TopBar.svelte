@@ -44,16 +44,31 @@
   });
 </script>
 
-<header class="topbar">
-  <div class="brand">
-    <div class:inverted={theme === "dark"} class="brand-mark" aria-hidden="true">i</div>
+<header class="mb-1.5 flex min-h-7 shrink-0 items-center justify-between">
+  <div class="flex items-center gap-2">
+    <div
+      class={`grid size-5.25 place-items-center rounded-panel border bg-linear-to-br font-serif text-[14px] italic ${
+        theme === "dark"
+          ? "border-neutral-300 from-neutral-100 to-neutral-300 text-neutral-800 shadow-brand-mark-inverted"
+          : "border-neutral-700 from-neutral-700 to-neutral-800 text-neutral-300 shadow-brand-mark"
+      }`}
+      aria-hidden="true"
+    >i</div>
     <div>
-      <h1>Iridium Playground</h1>
+      <h1 class="m-0 text-13 font-semibold tracking-tight text-primary">Iridium Playground</h1>
     </div>
   </div>
-  <div class="run-controls">
-    <span class:failed={status === "error"} class:running={status === "running"} class="run-status">
-      <span class="status-dot"></span>
+  <div class="flex items-center gap-2 max-mobile:gap-1.5">
+    <span class="inline-flex items-center gap-1.5 text-11 text-secondary max-mobile:hidden">
+      <span
+        class={`size-1.75 rounded-full ${
+          status === "running"
+            ? "bg-status-running shadow-status-running"
+            : status === "error"
+              ? "bg-status-failed shadow-status-failed"
+              : "bg-status-success shadow-status-success"
+        }`}
+      ></span>
       {status === "scheduled"
         ? "Auto-run on"
         : status === "running"
@@ -71,7 +86,7 @@
         : "Copy a link to this code"}
     >
       {#snippet children()}
-      <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <svg class="size-3.5 shrink-0 fill-none stroke-current stroke-2 [stroke-linecap:round] [stroke-linejoin:round]" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="18" cy="5" r="3"></circle>
         <circle cx="6" cy="12" r="3"></circle>
         <circle cx="18" cy="19" r="3"></circle>
@@ -88,12 +103,12 @@
     >
       {#snippet children()}
       {#if theme === "dark"}
-        <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="size-[15px] shrink-0 fill-none stroke-current [stroke-width:1.7] [stroke-linecap:round] [stroke-linejoin:round]" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="4"></circle>
           <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
         </svg>
       {:else}
-        <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="size-[15px] shrink-0 fill-none stroke-current [stroke-width:1.7] [stroke-linecap:round] [stroke-linejoin:round]" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z"></path>
         </svg>
       {/if}
@@ -101,118 +116,3 @@
     </Button>
   </div>
 </header>
-
-<style>
-  .topbar {
-    display: flex;
-    min-height: 28px;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-  }
-
-  .brand,
-  .run-controls {
-    display: flex;
-    align-items: center;
-  }
-
-  .brand {
-    gap: 8px;
-  }
-
-  .brand-mark {
-    display: grid;
-    width: 21px;
-    height: 21px;
-    place-items: center;
-    border: 1px solid #343537;
-    border-radius: var(--border-radius);
-    background: linear-gradient(145deg, #3a3b3d, #252627);
-    color: #d2d2d2;
-    font-family: Georgia, serif;
-    font-size: 14px;
-    font-style: italic;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%);
-  }
-
-  .brand-mark.inverted {
-    border-color: #d2d2d2;
-    background: linear-gradient(145deg, #f0f0f0, #c8c8c8);
-    color: #252627;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 70%);
-  }
-
-  .share-icon,
-  .theme-icon {
-    flex: 0 0 auto;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .share-icon {
-    width: 14px;
-    height: 14px;
-    stroke-width: 1.8;
-  }
-
-  .theme-icon {
-    width: 15px;
-    height: 15px;
-    stroke-width: 1.7;
-  }
-
-  .brand h1 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-  }
-
-  .run-controls {
-    gap: 8px;
-  }
-
-  .run-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text-secondary);
-    font-size: 11px;
-  }
-
-  .status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #47cba1;
-    box-shadow: 0 0 4px rgb(71 203 161 / 24%);
-  }
-
-  .run-status.running .status-dot {
-    background: #e3b65e;
-    box-shadow: 0 0 4px rgb(227 182 94 / 28%);
-  }
-
-  .run-status.failed .status-dot {
-    background: #ed6b79;
-    box-shadow: 0 0 4px rgb(237 107 121 / 28%);
-  }
-
-  @media (max-width: 520px) {
-    .run-controls {
-      flex-direction: row;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .run-status {
-      display: none;
-    }
-
-  }
-</style>

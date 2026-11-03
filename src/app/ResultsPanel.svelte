@@ -27,7 +27,7 @@
   }: Props = $props();
 </script>
 
-<div class="results-content">
+<div class="flex w-full shrink-0 flex-col gap-3 overflow-visible p-4">
   {#if errorMessage}
     <ErrorCard message={errorMessage} />
   {/if}
@@ -55,16 +55,3 @@
     {/if}
   {/each}
 </div>
-
-<style>
-  .results-content {
-    display: flex;
-    width: 100%;
-    min-height: auto;
-    flex: 0 0 auto;
-    flex-direction: column;
-    gap: 12px;
-    overflow: visible;
-    padding: 16px;
-  }
-</style>

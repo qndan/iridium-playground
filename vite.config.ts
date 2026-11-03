@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 // https://vite.dev/config/
 export default defineConfig({
   base: "/iridium-playground/",
-  plugins: [svelte(), nodePolyfills({
+  plugins: [tailwindcss(), svelte(), nodePolyfills({
     exclude: ["module"],
   })],
 })

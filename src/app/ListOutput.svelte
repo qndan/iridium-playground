@@ -11,51 +11,12 @@
 </script>
 
 <ResultCard title={output.title} badge={`LIST · ${output.items.length}`}>
-  <ul class="list-result">
+  <ul class="m-0 grid grid-cols-list gap-x-2 gap-y-1 p-2 list-none">
     {#each output.items as item, index (`${output.id}-${index}`)}
-      <li>
-        <span class="list-index">{String(index + 1).padStart(2, "0")}</span>
-        <code>{formatValue(item)}</code>
+      <li class="flex min-h-7 min-w-0 items-center gap-2 rounded-panel border border-result-border bg-list-item-bg px-2 py-1.5">
+        <span class="font-mono text-3xs text-list-index">{String(index + 1).padStart(2, "0")}</span>
+        <code class="min-w-0 overflow-hidden text-ellipsis whitespace-pre font-mono text-2xs text-list-text">{formatValue(item)}</code>
       </li>
     {/each}
   </ul>
 </ResultCard>
-
-<style>
-  .list-result {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-    gap: 4px 8px;
-    margin: 0;
-    padding: 8px 8px;
-    list-style: none;
-  }
-
-  .list-result li {
-    display: flex;
-    min-width: 0;
-    min-height: 28px;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border: 1px solid var(--result-border);
-    border-radius: var(--border-radius);
-    background: var(--list-item-bg);
-  }
-
-  .list-index {
-    color: var(--list-index);
-    font-family: var(--mono);
-    font-size: 9px;
-  }
-
-  .list-result code {
-    min-width: 0;
-    overflow: hidden;
-    color: var(--list-text);
-    font-family: var(--mono);
-    font-size: 10px;
-    text-overflow: ellipsis;
-    white-space: pre;
-  }
-</style>

@@ -153,10 +153,10 @@
   />
 </svelte:head>
 
-<main class="playground" data-theme={theme}>
+<main class="mx-auto flex h-screen h-dvh min-h-0 w-full max-w-playground flex-col overflow-hidden bg-transparent px-2 pt-1.5 pb-2 max-app:px-2.5 max-app:pt-2 max-app:pb-2.5 max-mobile:p-1.5" data-theme={theme}>
   <TopBar {theme} {status} onToggleTheme={toggleTheme} />
 
-  <div class="workspace">
+  <div class="grid min-h-0 flex-1 grid-cols-playground gap-2 max-app:grid-cols-1 max-app:grid-rows-2 max-app:gap-3">
     <Pane title="Code" ariaLabel="Code editor">
       {#snippet headerActions()}
         <ExampleSelector
@@ -166,7 +166,7 @@
           onSelect={selectExample}
         />
       {/snippet}
-      <div class="editor-frame">
+      <div class="flex min-h-0 flex-1 flex-col overflow-hidden bg-surface-soft">
         <CodePanel {theme} />
       </div>
     </Pane>
@@ -178,7 +178,7 @@
       bind:element={resultsPane}
     >
       {#snippet headerActions()}
-        <span class="result-count">{outputs.length} {outputs.length === 1 ? "item" : "items"}</span>
+        <span class="rounded-panel border border-tag-border bg-tag-bg px-1.75 py-1 text-[9px] text-secondary font-mono">{outputs.length} {outputs.length === 1 ? "item" : "items"}</span>
       {/snippet}
       <ResultsPanel
         {outputs}
@@ -191,64 +191,3 @@
     </Pane>
   </div>
 </main>
-
-<style>
-  .playground {
-    display: flex;
-    width: min(1600px, 100%);
-    height: 100vh;
-    height: 100dvh;
-    min-height: 0;
-    flex-direction: column;
-    margin: 0 auto;
-    padding: 6px 8px 8px;
-    overflow: hidden;
-    background: transparent;
-  }
-
-  .workspace {
-    display: grid;
-    min-height: 0;
-    flex: 1 1 0;
-    grid-template-columns: minmax(0, 0.96fr) minmax(0, 1.04fr);
-    gap: 8px;
-  }
-
-  .result-count {
-    padding: 4px 7px;
-    border: 1px solid var(--tag-border);
-    border-radius: var(--border-radius);
-    background: var(--tag-bg);
-    color: var(--text-secondary);
-    font-family: var(--mono);
-    font-size: 9px;
-  }
-
-  .editor-frame {
-    display: flex;
-    flex: 1 1 0;
-    min-height: 0;
-    flex-direction: column;
-    overflow: hidden;
-    background: var(--surface-soft);
-  }
-
-  @media (max-width: 800px) {
-    .playground {
-      padding: 8px 10px 10px;
-    }
-
-    .workspace {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-      gap: 12px;
-    }
-
-  }
-
-  @media (max-width: 520px) {
-    .playground {
-      padding: 6px;
-    }
-  }
-</style>

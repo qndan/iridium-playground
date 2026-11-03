@@ -11,22 +11,22 @@
 </script>
 
 <ResultCard title={output.title} badge={`TABLE · ${output.rows.length} ROWS`}>
-  <div class="table-result-wrap">
-    <table class="table-result">
+  <div class="overflow-visible">
+    <table class="w-full border-separate border-spacing-0 text-right whitespace-nowrap font-mono text-3xs text-result-text">
       <thead>
         <tr>
-          <th scope="col">Row</th>
+          <th class="border-b border-list-divider px-3 py-2 text-left font-medium text-subtle" scope="col">Row</th>
           {#each output.columnNames as columnName, columnIndex (`${output.id}-header-${columnIndex}`)}
-            <th scope="col">{columnName}</th>
+            <th class="border-b border-list-divider px-3 py-2 font-medium text-subtle last:border-b-0" scope="col">{columnName}</th>
           {/each}
         </tr>
       </thead>
       <tbody>
         {#each output.rows as row, rowIndex (`${output.id}-row-${rowIndex}`)}
-          <tr>
-            <th scope="row">{output.rowNames[rowIndex] || rowIndex + 1}</th>
+          <tr class="last:[&>th]:border-b-0 last:[&>td]:border-b-0">
+            <th class="sticky left-0 border-b border-list-divider bg-result-bg px-3 py-2 text-left font-normal text-list-index" scope="row">{output.rowNames[rowIndex] || rowIndex + 1}</th>
             {#each row as value, columnIndex (`${output.id}-${rowIndex}-${columnIndex}`)}
-              <td>{formatValue(value)}</td>
+              <td class="border-b border-list-divider px-3 py-2">{formatValue(value)}</td>
             {/each}
           </tr>
         {/each}
@@ -34,53 +34,3 @@
     </table>
   </div>
 </ResultCard>
-
-<style>
-  .table-result-wrap {
-    overflow: visible;
-  }
-
-  .table-result {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    color: var(--result-text);
-    font-family: var(--mono);
-    font-size: 10px;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  .table-result th,
-  .table-result td {
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--list-divider);
-  }
-
-  .table-result thead {
-    background: var(--result-bg);
-  }
-
-  .table-result thead th {
-    color: var(--subtle);
-    font-weight: 500;
-  }
-
-  .table-result thead th:first-child,
-  .table-result tbody th {
-    position: sticky;
-    left: 0;
-    background: var(--result-bg);
-    text-align: left;
-  }
-
-  .table-result tbody th {
-    color: var(--list-index);
-    font-weight: 400;
-  }
-
-  .table-result tbody tr:last-child th,
-  .table-result tbody tr:last-child td {
-    border-bottom: 0;
-  }
-</style>

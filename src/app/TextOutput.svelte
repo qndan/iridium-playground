@@ -32,9 +32,9 @@
 
 <ResultCard title="Text">
   {#snippet headerActions()}
-    <div class="text-result-actions">
+    <div class="flex items-center gap-2">
       {#if copyStatus === "error"}
-        <span class="copy-feedback error" aria-live="polite">{copyError}</span>
+        <span class="text-2xs leading-relaxed text-error-heading-text" aria-live="polite">{copyError}</span>
       {/if}
       <Button
         variant="secondary"
@@ -48,33 +48,5 @@
       </Button>
     </div>
   {/snippet}
-  <p class="text-result">{output.text}</p>
+  <p class="m-0 whitespace-pre-wrap wrap-anywhere p-4 text-xs leading-copy text-result-text">{output.text}</p>
 </ResultCard>
-
-<style>
-  .text-result-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .copy-feedback {
-    color: var(--chip-text);
-    font-size: 10px;
-    line-height: 1.6;
-  }
-
-  .copy-feedback.error {
-    color: var(--error-heading-text);
-  }
-
-  .text-result {
-    margin: 0;
-    padding: 15px;
-    color: var(--result-text);
-    font-size: 12px;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-  }
-</style>

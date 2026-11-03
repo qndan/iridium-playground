@@ -123,14 +123,4 @@
   });
 </script>
 
-<div class="editor-host" bind:this={host}></div>
-
-<style>
-  .editor-host {
-    width: 100%;
-    height: 0;
-    min-height: 0;
-    flex: 1 1 0;
-    overflow: hidden;
-  }
-</style>
+<div class="h-0 min-h-0 w-full flex-1 overflow-hidden" bind:this={host}></div>
