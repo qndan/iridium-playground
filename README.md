@@ -51,6 +51,10 @@ Demo.plot(simulator.simulate(0, 20, 200), "With modified state");
 The `Iridium` API matches RoadRunner's, and `Iridium` and `Demo` are available
 in the editor without import statements.
 
+Use the example selector above the editor to explore text/list outputs, plot and
+table outputs, and an example that creates a slider for each floating species
+returned by `sim.model.getFloatingSpeciesIds()`.
+
 Some Iridium calls are asynchronous so WebAssembly can initialize and models
 can load without blocking the UI. This async API is subject to change.
 

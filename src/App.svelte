@@ -2,9 +2,11 @@
   import * as Iridium from "iridium-simulator";
   import { onMount, tick } from "svelte";
   import CodePanel from "./app/CodePanel.svelte";
+  import ExampleSelector from "./app/ExampleSelector.svelte";
   import ResultsPanel from "./app/ResultsPanel.svelte";
   import TopBar from "./app/TopBar.svelte";
   import { createDemo, type DemoApi, type DemoOutput } from "./app/Demo";
+  import { examples } from "./app/examples";
   import { formatValue } from "./app/formatValue";
   import { code } from "./app/state.svelte";
   import type { RunStatus } from "./app/types";
@@ -15,6 +17,9 @@
   const sliderValues = $state<Record<string, number>>({});
   const sliderDraftValues = $state<Record<string, number>>({});
   let theme = $state<"dark" | "light">("dark");
+  let selectedExample = $state(examples[0].id);
+  let hasSharedCode = $state(false);
+  const exampleDrafts = $state<Record<string, string>>({});
   let status = $state<RunStatus>("scheduled");
   let errorMessage = $state("");
   let scheduledSliderRun: number | undefined;
@@ -23,7 +28,12 @@
 
   onMount(() => {
     const sharedCode = new URLSearchParams(window.location.hash.slice(1)).get("code");
-    if (sharedCode !== null) code.value = sharedCode;
+    if (sharedCode !== null) {
+      selectedExample = "shared";
+      hasSharedCode = true;
+      exampleDrafts.shared = sharedCode;
+      code.value = sharedCode;
+    }
 
     const savedTheme = localStorage.getItem("iridium-playground-theme");
     if (savedTheme === "light" || savedTheme === "dark") {
@@ -31,6 +41,18 @@
       document.documentElement.dataset.theme = savedTheme;
     }
   });
+
+  function selectExample(exampleId: string): void {
+    if (exampleId === selectedExample) return;
+
+    const example = examples.find(({ id }) => id === exampleId);
+    const nextSource = exampleDrafts[exampleId] ?? example?.source;
+    if (nextSource === undefined) return;
+
+    exampleDrafts[selectedExample] = code.value;
+    selectedExample = exampleId;
+    code.value = nextSource;
+  }
 
   function toggleTheme(): void {
     theme = theme === "dark" ? "light" : "dark";
@@ -137,6 +159,12 @@
     <section class="pane editor-pane" aria-label="Code editor">
       <div class="pane-heading">
         <h2>Code</h2>
+        <ExampleSelector
+          {examples}
+          selected={selectedExample}
+          {hasSharedCode}
+          onSelect={selectExample}
+        />
       </div>
       <div class="editor-frame">
         <CodePanel {theme} />
