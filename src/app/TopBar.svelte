@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy } from "svelte";
+  import Button from "./Button.svelte";
   import { code } from "./state.svelte";
   import type { RunStatus } from "./types";
 
@@ -61,39 +62,43 @@
             ? "Run failed"
             : "Up to date"}
     </span>
-    <button
-      class="share-button"
+    <Button
+      variant="primary"
       onclick={shareCode}
-      aria-label={shareStatus === "copied" ? "Share link copied" : "Copy share link"}
+      ariaLabel={shareStatus === "copied" ? "Share link copied" : "Copy share link"}
       title={shareStatus === "error"
         ? `Could not copy share link: ${shareError}`
         : "Copy a link to this code"}
     >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
+      {#snippet children()}
+      <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="18" cy="5" r="3"></circle>
         <circle cx="6" cy="12" r="3"></circle>
         <circle cx="18" cy="19" r="3"></circle>
         <path d="m8.7 10.6 6.6-4.2m-6.6 7 6.6 4.2"></path>
       </svg>
       {shareStatus === "copied" ? "Link copied" : shareStatus === "error" ? "Copy failed" : "Share"}
-    </button>
-    <button
-      class="theme-button"
+      {/snippet}
+    </Button>
+    <Button
+      variant="icon"
       onclick={onToggleTheme}
-      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+      ariaLabel={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
       title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
     >
+      {#snippet children()}
       {#if theme === "dark"}
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="12" cy="12" r="4"></circle>
           <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
         </svg>
       {:else}
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="theme-icon" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z"></path>
         </svg>
       {/if}
-    </button>
+      {/snippet}
+    </Button>
   </div>
 </header>
 
@@ -139,6 +144,27 @@
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 70%);
   }
 
+  .share-icon,
+  .theme-icon {
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .share-icon {
+    width: 14px;
+    height: 14px;
+    stroke-width: 1.8;
+  }
+
+  .theme-icon {
+    width: 15px;
+    height: 15px;
+    stroke-width: 1.7;
+  }
+
   .brand h1 {
     margin: 0;
     color: var(--text-primary);
@@ -151,74 +177,12 @@
     gap: 8px;
   }
 
-  .share-button {
-    display: inline-flex;
-    min-height: 30px;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 0 11px;
-    border: 1px solid var(--tag-border);
-    border-radius: var(--border-radius);
-    background: var(--surface-raised);
-    color: var(--text-primary);
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: 500;
-    transition: background-color 120ms ease, border-color 120ms ease;
-  }
-
-  .share-button svg {
-    width: 14px;
-    height: 14px;
-    flex: 0 0 auto;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.8;
-  }
-
-  .share-button:hover,
-  .theme-button:hover {
-    background-color: color-mix(in srgb, var(--surface-raised) 96%, var(--text-primary) 4%);
-    border-color: color-mix(in srgb, var(--border) 92%, var(--text-primary) 8%);
-  }
-
   .run-status {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     color: var(--text-secondary);
     font-size: 11px;
-  }
-
-  .theme-button {
-    display: grid;
-    width: 28px;
-    height: 28px;
-    flex: 0 0 auto;
-    place-items: center;
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    background: var(--surface);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
-  }
-
-  .theme-button:hover {
-    color: var(--text-primary);
-  }
-
-  .theme-button svg {
-    width: 15px;
-    height: 15px;
-    fill: none;
-    stroke: currentColor;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-width: 1.7;
   }
 
   .status-dot {
@@ -250,9 +214,5 @@
       display: none;
     }
 
-    .theme-button {
-      width: 30px;
-      height: 30px;
-    }
   }
 </style>

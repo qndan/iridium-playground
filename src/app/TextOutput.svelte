@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Button from "./Button.svelte";
   import ResultCard from "./ResultCard.svelte";
   import type { DemoOutput } from "./Demo";
 
@@ -35,15 +36,16 @@
       {#if copyStatus === "error"}
         <span class="copy-feedback error" aria-live="polite">{copyError}</span>
       {/if}
-      <button
-        type="button"
-        class="copy-button"
+      <Button
+        variant="secondary"
         onclick={copyText}
-        aria-label="Copy text result"
+        ariaLabel="Copy text result"
         title={copyStatus === "error" ? copyError : "Copy text"}
       >
+        {#snippet children()}
         {copyStatus === "copied" ? "Copied" : copyStatus === "error" ? "Copy failed" : "Copy"}
-      </button>
+        {/snippet}
+      </Button>
     </div>
   {/snippet}
   <p class="text-result">{output.text}</p>
@@ -54,24 +56,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-  }
-
-  .copy-button {
-    min-height: 25px;
-    padding: 0 8px;
-    border: 1px solid var(--result-border);
-    border-radius: var(--border-radius);
-    background: var(--surface-soft);
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-size: 10px;
-    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
-  }
-
-  .copy-button:hover {
-    color: var(--text-primary);
-    background-color: color-mix(in srgb, var(--surface-soft) 96%, var(--text-primary) 4%);
-    border-color: color-mix(in srgb, var(--result-border) 92%, var(--text-primary) 8%);
   }
 
   .copy-feedback {

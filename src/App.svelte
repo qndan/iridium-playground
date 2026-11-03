@@ -3,6 +3,7 @@
   import { onMount, tick } from "svelte";
   import CodePanel from "./app/CodePanel.svelte";
   import ExampleSelector from "./app/ExampleSelector.svelte";
+  import Pane from "./app/Pane.svelte";
   import ResultsPanel from "./app/ResultsPanel.svelte";
   import TopBar from "./app/TopBar.svelte";
   import { createDemo, type DemoApi, type DemoOutput } from "./app/Demo";
@@ -24,7 +25,7 @@
   let errorMessage = $state("");
   let scheduledSliderRun: number | undefined;
   let latestRun = 0;
-  let resultsPane: HTMLElement;
+  let resultsPane = $state<HTMLElement>();
 
   onMount(() => {
     const sharedCode = new URLSearchParams(window.location.hash.slice(1)).get("code");
@@ -156,26 +157,29 @@
   <TopBar {theme} {status} onToggleTheme={toggleTheme} />
 
   <div class="workspace">
-    <section class="pane editor-pane" aria-label="Code editor">
-      <div class="pane-heading">
-        <h2>Code</h2>
+    <Pane title="Code" ariaLabel="Code editor">
+      {#snippet headerActions()}
         <ExampleSelector
           {examples}
           selected={selectedExample}
           {hasSharedCode}
           onSelect={selectExample}
         />
-      </div>
+      {/snippet}
       <div class="editor-frame">
         <CodePanel {theme} />
       </div>
-    </section>
+    </Pane>
 
-    <section class="pane results-pane" aria-label="Results panel" bind:this={resultsPane}>
-      <div class="pane-heading">
-        <h2>Results</h2>
+    <Pane
+      title="Results"
+      ariaLabel="Results panel"
+      scrollable
+      bind:element={resultsPane}
+    >
+      {#snippet headerActions()}
         <span class="result-count">{outputs.length} {outputs.length === 1 ? "item" : "items"}</span>
-      </div>
+      {/snippet}
       <ResultsPanel
         {outputs}
         {errorMessage}
@@ -184,7 +188,7 @@
         onSliderInput={updateSliderDraft}
         onSliderChange={updateSlider}
       />
-    </section>
+    </Pane>
   </div>
 </main>
 
@@ -210,36 +214,6 @@
     gap: 8px;
   }
 
-  .pane {
-    display: flex;
-    min-width: 0;
-    min-height: 0;
-    flex-direction: column;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    background: var(--surface);
-    box-shadow: 0 2px 4px rgb(0 0 0 / 5%);
-  }
-
-  .pane-heading {
-    display: flex;
-    min-height: 40px;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 12px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .pane-heading h2 {
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: -0.15px;
-  }
-
   .result-count {
     padding: 4px 7px;
     border: 1px solid var(--tag-border);
@@ -259,12 +233,6 @@
     background: var(--surface-soft);
   }
 
-  .results-pane {
-    overflow: auto;
-    overscroll-behavior: contain;
-    background: var(--surface);
-  }
-
   @media (max-width: 800px) {
     .playground {
       padding: 8px 10px 10px;
@@ -276,9 +244,6 @@
       gap: 12px;
     }
 
-    .pane {
-      min-height: 0;
-    }
   }
 
   @media (max-width: 520px) {

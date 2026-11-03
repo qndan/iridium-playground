@@ -57,27 +57,17 @@ Demo.plot(modifiedResults, "With modified state");
 // Demo.text(modifiedResults.toCsv());`,
   },
   {
-    id: "text-list",
-    name: "Text and list",
-    source: `// Add simple text and list results.
-Demo.text("Hello from the Iridium Playground!");
-Demo.list(["first item", "second item", "third item"], "Example items");`,
-  },
-  {
-    id: "plot-table",
-    name: "Plot and table",
-    source: `// Simulate a reaction, then show the results as both a plot and a table.
-const simulator = await Iridium.createSimulator();
-await simulator.loadAntimony(\`
-A -> B; k * A
-A = 10
-B = 0
-k = 0.25
-\`);
+    id: "sbml",
+    name: "Loading SBML from Biomodels",
+    source: `const resp = await fetch("https://raw.githubusercontent.com/sys-bio/BiomodelsStore/refs/heads/main/biomodels/BIOMD0000000042/BIOMD0000000042_url.xml");
+const sbml = await resp.text();
 
-const results = simulator.simulate(0, 10, 20);
-Demo.plot(results, "A to B");
-Demo.table(results, "Simulation data");`,
+const simulator = await Iridium.createSimulator();
+await simulator.load(sbml);
+
+const result = simulator.simulate(0, 100, 200);
+Demo.plot(result, "BIOMD0000000042");
+Demo.table(result, "Simulation data");`,
   },
   {
     id: "species-sliders",
