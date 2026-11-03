@@ -20,7 +20,7 @@
     "vite-plugin-node-polyfills": "^0.28.0"
   },
   "dependencies": {
-    "antimony-language": "file:antimony-language-1.0.0.tgz",
+    "iridium-simulator": "file:iridium-simulator-0.0.0.tgz",
     "uplot": "^1.6.32"
   }
 }

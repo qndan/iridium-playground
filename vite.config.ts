@@ -4,7 +4,7 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "iridium-playground",
+  base: "/iridium-playground/",
   plugins: [svelte(), nodePolyfills({
     exclude: ["module"],
   })],

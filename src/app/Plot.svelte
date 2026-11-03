@@ -1,101 +1,88 @@
 <script lang="ts">
-import { untrack } from "svelte";
-import uPlot from "uplot";
-import { variables, columns } from "./state.svelte.ts";
-import { TIME_NAME } from "antimony-language";
+  import { onDestroy } from "svelte";
+  import uPlot from "uplot";
 
-export type PlotProps = {
-  data: number[][];
-  width: number;
-  height: number;
-};
-
-const {
-  data,
-  width,
-  height,
-}: PlotProps = $props();
-
-const LEGEND_HEIGHT = 48;
-const COLORS = [
-  "red",
-  "green",
-  "blue",
-  "yellow",
-  "cyan",
-  "magenta",
-];
-
-let container: HTMLDivElement;
-let plot;
-
-function getSeries() {
-  if (columns.value.length <= 0) {
-    return [{}, {}];
-  } else {
-    return variables.value.map(({name, visible}, i) => (name === TIME_NAME ? {} : {
-      label: name,
-      stroke: COLORS[(i - 1) % COLORS.length],
-      width: 3,
-      show: visible,
-    }));
-  }
-}
-
-function getData() {
-  if (columns.value.length <= 0) {
-    return [[0], [0]]
-  } else {
-    return $state.snapshot(columns.value).map(col => col.values);
-  }
-}
-
-$effect(() => {
-  const opts = {
-    width: untrack(() => width),
-    height: untrack(() => height - LEGEND_HEIGHT),
-
-    scales: {
-      x: {
-        time: false,
-      },
-    },
-
-    series: getSeries(),
+  type Props = {
+    data: [number[], ...number[][]];
+    labels: string[];
+    title: string;
+    theme: "dark" | "light";
   };
 
-  plot = new uPlot(opts, untrack(getData), container);
+  let { data, labels, title, theme }: Props = $props();
+  let container: HTMLDivElement;
+  let width = $state(0);
+  let height = $state(0);
+  let plot: uPlot | undefined;
 
-  return () => plot.destroy();
-});
+  function makeSeries(): uPlot.Series[] {
+    const colors = ["#5b67e8", "#10a88a", "#f59e0b", "#e05d78", "#33a6c8", "#9b68cc"];
+    return [
+      {},
+      ...labels.map((label, index) => ({
+        label,
+        stroke: colors[index % colors.length],
+        width: 2,
+      })),
+    ];
+  }
 
-$effect(() => {
-  if (!plot) return;
-  plot.setSize({ width, height: height - LEGEND_HEIGHT });
-});
+  $effect(() => {
+    if (!container || width <= 0 || height <= 0) return;
+    const axisColor = theme === "light" ? "#68758a" : "#8290a5";
+    const gridColor =
+      theme === "light" ? "rgba(104, 117, 138, .18)" : "rgba(130, 144, 165, .14)";
+    const instance = new uPlot(
+      {
+        width,
+        height,
+        title,
+        scales: { x: { time: false } },
+        series: makeSeries(),
+        axes: [
+          { stroke: axisColor, grid: { stroke: gridColor } },
+          { stroke: axisColor, grid: { stroke: gridColor } },
+        ],
+        legend: { show: labels.length > 1 },
+      },
+      data,
+      container,
+    );
+    plot = instance;
+    return () => {
+      instance.destroy();
+      if (plot === instance) plot = undefined;
+    };
+  });
 
-$effect(() => {
-  if (!plot) return;
-  plot.setData(getData());
-});
+  $effect(() => {
+    const currentPlot = plot;
+    if (currentPlot && width > 0 && height > 0) {
+      currentPlot.setSize({ width, height });
+    }
+  });
+
+  $effect(() => {
+    plot?.setData(data);
+  });
+
+  onDestroy(() => plot?.destroy());
 </script>
 
-<div class="container2">
-  <div class="container" bind:this={container} />
+<div class="plot-frame" bind:clientWidth={width} bind:clientHeight={height}>
+  <div class="plot-target" bind:this={container}></div>
 </div>
 
 <style>
-.container2 {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  min-width: 0;
-  min-height: 0;
-}
+  .plot-frame {
+    width: 100%;
+    height: 300px;
+    min-height: 220px;
+    overflow: hidden;
+  }
 
-.container {
-  position: absolute;
-  inset: 0;
-}
+  .plot-target {
+    width: 100%;
+    height: 100%;
+  }
 </style>
