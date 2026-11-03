@@ -41,5 +41,9 @@ simulator.reset();
 simulator.setValue("k1", modifiedK1);
 
 // Run the model again and plot the result with the modified k1.
-Demo.plot(simulator.simulate(0, 20, 200), "With modified state");`,
+const modifiedResults = simulator.simulate(0, 20, 200);
+Demo.plot(modifiedResults, "With modified state");
+
+// Uncomment the line below to show CSV.
+// Demo.text(modifiedResults.toCsv());`,
 });

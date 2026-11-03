@@ -70,3 +70,7 @@ you make a change.
 
 Use the theme button in the header to switch between dark and light themes;
 your choice is saved in this browser.
+
+Use **Share** to copy a link that restores the current editor code when opened.
+The source is stored in the URL fragment. Click a text result to copy its
+contents.

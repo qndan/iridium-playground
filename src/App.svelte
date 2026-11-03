@@ -15,11 +15,17 @@
   let theme = $state<"dark" | "light">("dark");
   let status = $state<RunStatus>("scheduled");
   let errorMessage = $state("");
+  let shareStatus = $state<"idle" | "copied" | "error">("idle");
+  let shareError = $state("");
+  let copyFeedback = $state<{ outputId: number; message: string; failed: boolean } | null>(null);
   let scheduledSliderRun: number | undefined;
   let latestRun = 0;
   let resultsPane: HTMLElement;
 
   onMount(() => {
+    const sharedCode = new URLSearchParams(window.location.hash.slice(1)).get("code");
+    if (sharedCode !== null) code.value = sharedCode;
+
     const savedTheme = localStorage.getItem("iridium-playground-theme");
     if (savedTheme === "light" || savedTheme === "dark") {
       theme = savedTheme;
@@ -31,6 +37,35 @@
     theme = theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("iridium-playground-theme", theme);
+  }
+
+  async function shareCode() {
+    const shareUrl = new URL(window.location.href);
+    const fragment = new URLSearchParams();
+    fragment.set("code", code.value);
+    shareUrl.hash = fragment.toString();
+
+    try {
+      await navigator.clipboard.writeText(shareUrl.toString());
+      shareStatus = "copied";
+      shareError = "";
+    } catch (error) {
+      shareStatus = "error";
+      shareError = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  async function copyText(outputId: number, text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      copyFeedback = { outputId, message: "Copied", failed: false };
+    } catch (error) {
+      copyFeedback = {
+        outputId,
+        message: `Copy failed: ${error instanceof Error ? error.message : String(error)}`,
+        failed: true,
+      };
+    }
   }
 
   function displayValue(value: unknown): string {
@@ -47,6 +82,7 @@
     const previousScrollTop = resultsPane?.scrollTop ?? 0;
     outputs.length = 0;
     errorMessage = "";
+    copyFeedback = null;
     status = "running";
 
     const demo = createDemo(
@@ -150,6 +186,14 @@
               : "Up to date"}
       </span>
       <button
+        class="share-button"
+        onclick={shareCode}
+        aria-label={shareStatus === "copied" ? "Share link copied" : "Copy share link"}
+        title={shareStatus === "error" ? `Could not copy share link: ${shareError}` : "Copy a link to this code"}
+      >
+        {shareStatus === "copied" ? "Link copied" : shareStatus === "error" ? "Copy failed" : "Share"}
+      </button>
+      <button
         class="theme-button"
         onclick={toggleTheme}
         aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
@@ -229,7 +273,7 @@
                 <h3>{output.title}</h3>
                 <span class="result-type">PLOT</span>
               </div>
-              <Plot data={output.data} labels={output.labels} title={output.title} {theme} />
+              <Plot data={output.data} labels={output.labels} {theme} />
             {:else if output.type === "table"}
               <div class="result-card-heading">
                 <h3>{output.title}</h3>
@@ -260,7 +304,28 @@
             {:else if output.type === "text"}
               <div class="result-card-heading">
                 <h3>Text</h3>
-                <span class="result-type">TEXT</span>
+                <div class="text-result-actions">
+                  {#if copyFeedback?.outputId === output.id && copyFeedback.failed}
+                    <span
+                      class:error={copyFeedback.failed}
+                      class="copy-feedback"
+                      aria-live="polite"
+                    >{copyFeedback.message}</span>
+                  {/if}
+                  <button
+                    type="button"
+                    class="copy-button"
+                    onclick={() => copyText(output.id, output.text)}
+                    aria-label="Copy text result"
+                    title={copyFeedback?.failed && copyFeedback.outputId === output.id
+                      ? copyFeedback.message
+                      : "Copy text"}
+                  >
+                    {copyFeedback?.outputId === output.id
+                      ? copyFeedback.failed ? "Copy failed" : "Copied"
+                      : "Copy"}
+                  </button>
+                </div>
               </div>
               <p class="text-result">{output.text}</p>
             {:else if output.type === "slider"}

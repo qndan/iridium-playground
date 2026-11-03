@@ -103,6 +103,15 @@
   });
 
   $effect(() => {
+    const currentCode = code.value;
+    if (view && view.state.doc.toString() !== currentCode) {
+      view.dispatch({
+        changes: { from: 0, to: view.state.doc.length, insert: currentCode },
+      });
+    }
+  });
+
+  $effect(() => {
     const currentTheme = theme;
     const dark = currentTheme === "dark";
     view?.dispatch({
