@@ -20,7 +20,7 @@
     const dark = currentTheme === "dark";
     return EditorView.theme(
       {
-        "&": {
+        "&.cm-editor": {
           height: "100%",
           color: "var(--text-primary)",
           backgroundColor: "var(--surface-soft)",
@@ -33,28 +33,28 @@
         },
         ".cm-content": {
           minHeight: "100%",
-          padding: "20px 22px",
-          caretColor: dark ? "#b6bdff" : "#545fc1",
+          padding: "0 22px",
+          caretColor: dark ? "#d0d0d0" : "#555555",
         },
         ".cm-line": {
           padding: "0",
         },
-        ".cm-gutters": {
+        "&.cm-editor .cm-gutters": {
           border: "none",
           backgroundColor: "var(--surface-soft)",
           color: "var(--subtle)",
         },
-        ".cm-activeLineGutter": {
+        ".cm-gutters .cm-activeLineGutter": {
           backgroundColor: "var(--surface)",
         },
-        ".cm-activeLine": {
-          backgroundColor: dark ? "rgba(255, 255, 255, .035)" : "rgba(32, 39, 56, .045)",
+        ".cm-line.cm-activeLine": {
+          backgroundColor: dark ? "rgba(255, 255, 255, .045)" : "rgba(32, 32, 32, .045)",
         },
         ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
-          backgroundColor: dark ? "rgba(139, 149, 255, .28)" : "rgba(84, 95, 193, .2)",
+          backgroundColor: dark ? "rgba(190, 190, 190, .24)" : "rgba(80, 80, 80, .16)",
         },
         ".cm-cursor": {
-          borderLeftColor: dark ? "#b6bdff" : "#545fc1",
+          borderLeftColor: dark ? "#d0d0d0" : "#555555",
         },
         ".cm-tooltip": {
           border: "1px solid var(--border)",
