@@ -11,10 +11,10 @@
 
   const outputs = $state<DemoOutput[]>([]);
   const sliderValues = $state<Record<string, number>>({});
+  const sliderDraftValues = $state<Record<string, number>>({});
   let theme = $state<"dark" | "light">("dark");
   let status = $state<RunStatus>("scheduled");
   let errorMessage = $state("");
-  let scheduledRun: number | undefined;
   let scheduledSliderRun: number | undefined;
   let latestRun = 0;
   let resultsPane: HTMLElement;
@@ -92,19 +92,8 @@
     }
   }
 
-  function runNow() {
-    if (scheduledRun !== undefined) {
-      window.clearTimeout(scheduledRun);
-      scheduledRun = undefined;
-    }
-    if (scheduledSliderRun !== undefined) {
-      window.clearTimeout(scheduledSliderRun);
-      scheduledSliderRun = undefined;
-    }
-    void execute(code.value);
-  }
-
   function updateSlider(name: string, value: number) {
+    sliderDraftValues[name] = value;
     sliderValues[name] = value;
     if (scheduledSliderRun !== undefined) {
       window.clearTimeout(scheduledSliderRun);
@@ -115,6 +104,10 @@
     }, 120);
   }
 
+  function getSliderValue(name: string, initialValue: number): number {
+    return sliderDraftValues[name] ?? initialValue;
+  }
+
   $effect(() => {
     const source = code.value;
     latestRun += 1;
@@ -123,16 +116,9 @@
       scheduledSliderRun = undefined;
     }
     status = "scheduled";
-    const timeout = window.setTimeout(() => {
-      scheduledRun = undefined;
-      void execute(source);
-    }, 500);
-    scheduledRun = timeout;
+    const timeout = window.setTimeout(() => void execute(source), 500);
 
-    return () => {
-      window.clearTimeout(timeout);
-      if (scheduledRun === timeout) scheduledRun = undefined;
-    };
+    return () => window.clearTimeout(timeout);
   });
 </script>
 
@@ -150,10 +136,19 @@
       <div class="brand-mark" aria-hidden="true">i</div>
       <div>
         <h1>Iridium Playground</h1>
-        <p>Write, simulate, explore</p>
       </div>
     </div>
     <div class="run-controls">
+      <span class:failed={status === "error"} class:running={status === "running"} class="run-status">
+        <span class="status-dot"></span>
+        {status === "scheduled"
+          ? "Auto-run on"
+          : status === "running"
+            ? "Running"
+            : status === "error"
+              ? "Run failed"
+              : "Up to date"}
+      </span>
       <button
         class="theme-button"
         onclick={toggleTheme}
@@ -170,20 +165,6 @@
             <path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z"></path>
           </svg>
         {/if}
-      </button>
-      <span class:failed={status === "error"} class="run-status">
-        <span class="status-dot"></span>
-        {status === "scheduled"
-          ? "Auto-run on"
-          : status === "running"
-            ? "Running"
-            : status === "error"
-              ? "Run failed"
-              : "Up to date"}
-      </span>
-      <button class="run-button" onclick={runNow} disabled={status === "running"}>
-        <span aria-hidden="true">▶</span>
-        Run code
       </button>
     </div>
   </header>
@@ -203,11 +184,10 @@
           <span class="import-chip">Demo</span>
           <span>auto-imported</span>
         </div>
-        <CodePanel />
+        <CodePanel {theme} />
       </div>
       <div class="editor-footer">
         <span>Changes run automatically</span>
-        <span>or run on demand</span>
       </div>
     </section>
 
@@ -284,6 +264,7 @@
               </div>
               <p class="text-result">{output.text}</p>
             {:else if output.type === "slider"}
+              {@const sliderValue = getSliderValue(output.name, output.value)}
               <div class="result-card-heading">
                 <h3>{output.name}</h3>
                 <span class="result-type">SLIDER</span>
@@ -294,12 +275,19 @@
                   min={output.min}
                   max={output.max}
                   step={output.step}
-                  value={output.value}
+                  value={sliderValue}
+                  style={`--slider-progress: ${
+                    output.max === output.min
+                      ? 0
+                      : ((sliderValue - output.min) / (output.max - output.min)) * 100
+                  }%`}
                   aria-label={output.name}
+                  oninput={(event) =>
+                    (sliderDraftValues[output.name] = event.currentTarget.valueAsNumber)}
                   onchange={(event) =>
                     updateSlider(output.name, event.currentTarget.valueAsNumber)}
                 />
-                <output>{output.value}</output>
+                <output>{sliderValue}</output>
               </div>
             {:else}
               <div class="result-card-heading">
