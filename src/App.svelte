@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { Tabs } from "bits-ui";
   import * as Iridium from "iridium-simulator";
   import { onMount, tick } from "svelte";
   import CodePanel from "./app/CodePanel.svelte";
   import ExampleSelector from "./app/ExampleSelector.svelte";
+  import HelpPanel from "./app/HelpPanel.svelte";
   import Pane from "./app/Pane.svelte";
   import ResultsPanel from "./app/ResultsPanel.svelte";
   import TopBar from "./app/TopBar.svelte";
@@ -23,6 +25,7 @@
   const exampleDrafts = $state<Record<string, string>>({});
   let status = $state<RunStatus>("scheduled");
   let errorMessage = $state("");
+  let resultsTab = $state<"results" | "help">("results");
   let scheduledSliderRun: number | undefined;
   let latestRun = 0;
   let resultsPane = $state<HTMLElement>();
@@ -172,22 +175,54 @@
     </Pane>
 
     <Pane
-      title="Results"
-      ariaLabel="Results panel"
+      title={resultsTab === "results" ? "Results" : "Help"}
+      ariaLabel={resultsTab === "results" ? "Results panel" : "Help panel"}
       scrollable
       bind:element={resultsPane}
     >
       {#snippet headerActions()}
-        <span class="rounded-panel border border-tag-border bg-tag-bg px-1.75 py-1 text-[9px] text-secondary font-mono">{outputs.length} {outputs.length === 1 ? "item" : "items"}</span>
+        <Tabs.Root
+          bind:value={resultsTab}
+          class="flex items-center rounded-panel border border-tag-border bg-surface-soft p-px"
+          aria-label="Results panel views"
+        >
+          <Tabs.List class="flex items-center gap-px">
+            <Tabs.Trigger
+              value="results"
+              class={`min-h-6.25 rounded-[3px] px-2 text-[10px] hover:text-primary ${
+                theme === "dark"
+                  ? "font-medium text-secondary data-[state=active]:bg-tag-bg data-[state=active]:font-semibold data-[state=active]:text-primary"
+                  : "bg-tag-bg font-semibold text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:text-secondary"
+              }`}
+            >
+              Results
+              <span class="ml-0.5 font-mono text-[9px] text-subtle">({outputs.length})</span>
+            </Tabs.Trigger>
+            <Tabs.Trigger
+              value="help"
+              class={`min-h-6.25 rounded-[3px] px-2 text-[10px] hover:text-primary ${
+                theme === "dark"
+                  ? "font-medium text-secondary data-[state=active]:bg-tag-bg data-[state=active]:font-semibold data-[state=active]:text-primary"
+                  : "bg-tag-bg font-semibold text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:text-secondary"
+              }`}
+            >
+              Help
+            </Tabs.Trigger>
+          </Tabs.List>
+        </Tabs.Root>
       {/snippet}
-      <ResultsPanel
-        {outputs}
-        {errorMessage}
-        {theme}
-        {sliderDraftValues}
-        onSliderInput={updateSliderDraft}
-        onSliderChange={updateSlider}
-      />
+      {#if resultsTab === "results"}
+        <ResultsPanel
+          {outputs}
+          {errorMessage}
+          {theme}
+          {sliderDraftValues}
+          onSliderInput={updateSliderDraft}
+          onSliderChange={updateSlider}
+        />
+      {:else}
+        <HelpPanel />
+      {/if}
     </Pane>
   </div>
 </main>

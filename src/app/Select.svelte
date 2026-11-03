@@ -24,7 +24,7 @@
   allowDeselect={false}
 >
   <BitsSelect.Trigger
-    class="group inline-flex w-example-select min-w-0 min-h-7 items-center justify-between gap-3 rounded-panel border border-tag-border bg-tag-bg px-2 text-left text-2xs text-secondary transition-colors hover:border-secondary hover:text-primary focus-visible:border-secondary focus-visible:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary data-[state=open]:border-secondary data-[state=open]:text-primary"
+    class="group inline-flex w-example-select min-w-0 min-h-7 items-center justify-between gap-3 rounded-panel border border-tag-border bg-tag-bg px-2 text-left text-2xs text-secondary hover:border-secondary hover:text-primary focus-visible:border-secondary focus-visible:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary data-[state=open]:border-secondary data-[state=open]:text-primary"
     aria-label={ariaLabel}
   >
     <BitsSelect.Value class="min-w-0 flex-1 truncate" />

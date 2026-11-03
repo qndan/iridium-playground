@@ -51,9 +51,13 @@ Demo.plot(simulator.simulate(0, 20, 200), "With modified state");
 The `Iridium` API matches RoadRunner's, and `Iridium` and `Demo` are available
 in the editor without import statements.
 
-Use the example selector above the editor to explore text/list outputs, plot and
-table outputs, and an example that creates a slider for each floating species
-returned by `sim.model.getFloatingSpeciesIds()`.
+Use the example selector above the editor to explore:
+
+- text and list outputs, including model structure inspection;
+- plot and table outputs, including selected simulation columns;
+- a parameter scan that merges trajectories across a range of rates; and
+- an example that creates a slider for each floating species returned by
+  `sim.model.getFloatingSpeciesIds()`.
 
 Some Iridium calls are asynchronous so WebAssembly can initialize and models
 can load without blocking the UI. This async API is subject to change.
@@ -61,8 +65,9 @@ can load without blocking the UI. This async API is subject to change.
 - `Demo.plot(namedArray, title?)` plots a simulator `NamedArray`; its first
   column is the x-axis and remaining columns are labeled data series. It also
   accepts an array of numeric columns in the same format.
-- `Demo.table(namedArray, title?)` displays the named array's column names,
-  row names, and values in a scrollable table.
+- `Demo.table(data, title?)` displays a simulator `NamedArray` or an array of
+  numeric columns in a scrollable table. Raw columns receive generic names and
+  numbered rows.
 - `Demo.text(text)` adds a text result.
 - `Demo.list(array, title?)` adds a list result.
 - `Demo.slider(min, max, step, name)` adds a slider and returns its current

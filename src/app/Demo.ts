@@ -35,7 +35,7 @@ export type DemoOutput = DemoOutputContent & { id: number };
 
 export interface DemoApi {
   plot(data: NamedArrayLike | readonly (readonly number[])[], title?: string): void;
-  table(data: NamedArrayLike, title?: string): void;
+  table(data: NamedArrayLike | readonly (readonly number[])[], title?: string): void;
   slider(min: number, max: number, step: number, name: string): number;
   text(text: string): void;
   list(items: readonly unknown[], title?: string): void;
@@ -109,32 +109,48 @@ export function createDemo(
     },
 
     table(data, title = "Table") {
-      if (!isNamedArray(data)) {
-        throw new TypeError("Demo.table() expects a NamedArray.");
-      }
-      if (data.columnNames.length !== data.columnCount) {
-        throw new TypeError("Demo.table() requires a name for every column.");
+      let columns: number[][];
+      let columnNames: string[];
+      let rowNames: string[];
+
+      if (isNamedArray(data)) {
+        if (data.columnNames.length !== data.columnCount) {
+          throw new TypeError("Demo.table() requires a name for every column.");
+        }
+        columns = Array.from({ length: data.columnCount }, (_, index) =>
+          data.sliceColumn(index),
+        );
+        columnNames = [...data.columnNames];
+        rowNames =
+          data.rowNames.length === data.rowCount
+            ? [...data.rowNames]
+            : Array.from({ length: data.rowCount }, (_, index) => String(index + 1));
+      } else if (Array.isArray(data)) {
+        columns = data.map((column) => {
+          if (!Array.isArray(column) || !column.every((value) => typeof value === "number")) {
+            throw new TypeError("Demo.table() expects a NamedArray or an array of numeric columns.");
+          }
+          return [...column];
+        });
+        columnNames = columns.map((_, index) => `Column ${index + 1}`);
+        const rowCount = columns[0]?.length ?? 0;
+        rowNames = Array.from({ length: rowCount }, (_, index) => String(index + 1));
+      } else {
+        throw new TypeError("Demo.table() expects a NamedArray or an array of numeric columns.");
       }
 
-      const columns = Array.from({ length: data.columnCount }, (_, index) =>
-        data.sliceColumn(index),
-      );
-      if (columns.some((column) => column.length !== data.rowCount)) {
-        throw new TypeError("Demo.table() requires every column to match the row count.");
+      const rowCount = columns[0]?.length ?? 0;
+      if (columns.some((column) => column.length !== rowCount)) {
+        throw new TypeError("Demo.table() requires all columns to have the same number of rows.");
       }
-
-      const rowNames =
-        data.rowNames.length === data.rowCount
-          ? [...data.rowNames]
-          : Array.from({ length: data.rowCount }, (_, index) => String(index + 1));
-      const rows = Array.from({ length: data.rowCount }, (_, rowIndex) =>
+      const rows = Array.from({ length: rowCount }, (_, rowIndex) =>
         columns.map((column) => column[rowIndex]),
       );
 
       publish({
         type: "table",
         title,
-        columnNames: [...data.columnNames],
+        columnNames,
         rowNames,
         rows,
       });

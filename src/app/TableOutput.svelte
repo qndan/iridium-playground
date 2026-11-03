@@ -11,7 +11,7 @@
 </script>
 
 <ResultCard title={output.title} badge={`TABLE · ${output.rows.length} ROWS`}>
-  <div class="overflow-visible">
+  <div class="max-w-full overflow-x-auto">
     <table class="w-full border-separate border-spacing-0 text-right whitespace-nowrap font-mono text-3xs text-result-text">
       <thead>
         <tr>
