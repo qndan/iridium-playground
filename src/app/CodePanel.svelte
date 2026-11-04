@@ -1,9 +1,10 @@
 <script lang="ts">
   import { basicSetup } from "codemirror";
   import { javascript } from "@codemirror/lang-javascript";
-  import { oneDark } from "@codemirror/theme-one-dark";
+  import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
   import { Compartment, EditorState } from "@codemirror/state";
   import { EditorView } from "@codemirror/view";
+  import { tags } from "@lezer/highlight";
   import { onMount } from "svelte";
   import { code } from "./state.svelte";
 
@@ -15,6 +16,34 @@
   let host: HTMLDivElement;
   let view: EditorView | undefined;
   const themeCompartment = new Compartment();
+  const darkHighlighting = syntaxHighlighting(
+    HighlightStyle.define([
+      { tag: tags.keyword, color: "#77dce0" },
+      { tag: tags.definition(tags.variableName), color: "#5adb8e" },
+      { tag: tags.function(tags.variableName), color: "#5adb8e" },
+      { tag: tags.typeName, color: "#77dce0" },
+      { tag: tags.operator, color: "#84cbe3" },
+      { tag: tags.meta, color: "#81bdeb" },
+      { tag: tags.string, color: "#e3df8a" },
+      { tag: tags.number, color: "#f7bd7e" },
+      { tag: tags.comment, color: "#6b967c" },
+      { tag: tags.invalid, color: "#ff0000" },
+    ]),
+  );
+  const lightHighlighting = syntaxHighlighting(
+    HighlightStyle.define([
+      { tag: tags.keyword, color: "#007f83" },
+      { tag: tags.definition(tags.variableName), color: "#187c4f" },
+      { tag: tags.function(tags.variableName), color: "#187c4f" },
+      { tag: tags.typeName, color: "#007f83" },
+      { tag: tags.operator, color: "#168fba" },
+      { tag: tags.meta, color: "#126fc0" },
+      { tag: tags.string, color: "#776f00" },
+      { tag: tags.number, color: "#b45c00" },
+      { tag: tags.comment, color: "#587a65" },
+      { tag: tags.invalid, color: "#ff0000" },
+    ]),
+  );
 
   function makeTheme(currentTheme: "dark" | "light") {
     const dark = currentTheme === "dark";
@@ -22,8 +51,8 @@
       {
         "&.cm-editor": {
           height: "100%",
-          color: "var(--text-primary)",
-          backgroundColor: "var(--surface-soft)",
+          color: dark ? "#e6e8eb" : "#111314",
+          backgroundColor: dark ? "#191b1d" : "#fefefe",
           fontSize: "13px",
         },
         ".cm-scroller": {
@@ -41,25 +70,30 @@
         },
         "&.cm-editor .cm-gutters": {
           border: "none",
-          backgroundColor: "var(--surface-soft)",
-          color: "var(--subtle)",
+          padding: "0 10px 0 12px",
+          backgroundColor: dark ? "#191b1d" : "#fefefe",
+          color: dark ? "#5e6673" : "#969da8",
         },
         ".cm-gutters .cm-activeLineGutter": {
-          backgroundColor: "var(--surface)",
+          color: dark ? "#c1c8d4" : "#3c3f45",
+          backgroundColor: "transparent",
         },
         ".cm-line.cm-activeLine": {
-          backgroundColor: dark ? "rgba(255, 255, 255, .045)" : "rgba(32, 32, 32, .045)",
+          backgroundColor: "transparent",
         },
-        ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
-          backgroundColor: dark ? "rgba(190, 190, 190, .24)" : "rgba(80, 80, 80, .16)",
+        ".cm-selectionBackground": {
+          backgroundColor: dark ? "#2c3b4d !important" : "#b9def5 !important",
+        },
+        "&.cm-focused .cm-selectionBackground": {
+          backgroundColor: dark ? "#2c3b4d !important" : "#b9def5 !important",
         },
         ".cm-cursor": {
           borderLeftColor: dark ? "#d0d0d0" : "#555555",
         },
         ".cm-tooltip": {
           border: "1px solid var(--border)",
-          backgroundColor: "var(--surface-raised)",
-          color: "var(--text-primary)",
+          backgroundColor: dark ? "#191b1d" : "#fefefe",
+          color: dark ? "#e6e8eb" : "#111314",
         },
         ".cm-tooltip-autocomplete > ul > li[aria-selected]": {
           backgroundColor: "var(--chip-bg)",
@@ -86,7 +120,7 @@
             spellcheck: "false",
           }),
           themeCompartment.of([
-            ...(theme === "dark" ? [oneDark] : []),
+            theme === "dark" ? darkHighlighting : lightHighlighting,
             makeTheme(theme),
           ]),
           EditorView.updateListener.of((update) => {
@@ -116,7 +150,7 @@
     const dark = currentTheme === "dark";
     view?.dispatch({
       effects: themeCompartment.reconfigure([
-        ...(dark ? [oneDark] : []),
+        dark ? darkHighlighting : lightHighlighting,
         makeTheme(currentTheme),
       ]),
     });

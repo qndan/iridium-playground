@@ -33,7 +33,7 @@
     </svg>
   </BitsSelect.Trigger>
   <BitsSelect.Portal>
-    <BitsSelect.Content class="z-20 max-h-select-menu min-w-select-menu overflow-auto rounded-panel border border-tag-border bg-surface-raised p-1 text-primary shadow-select" sideOffset={4}>
+    <BitsSelect.Content class="select-content-appear z-20 max-h-select-menu min-w-select-menu overflow-auto rounded-panel border border-tag-border bg-surface-raised p-1 text-primary shadow-select" sideOffset={4}>
       <BitsSelect.Viewport>
         {#each items as item (item.value)}
           <BitsSelect.Item
@@ -48,3 +48,28 @@
     </BitsSelect.Content>
   </BitsSelect.Portal>
 </BitsSelect.Root>
+
+<style>
+  @keyframes select-content-appear {
+    from {
+      opacity: 0;
+      transform: translateY(-3px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  :global(.select-content-appear) {
+    transform-origin: top;
+    animation: select-content-appear 140ms ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.select-content-appear) {
+      animation: none;
+    }
+  }
+</style>

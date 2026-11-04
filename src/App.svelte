@@ -59,9 +59,13 @@
   }
 
   function toggleTheme(): void {
+    document.documentElement.classList.add("theme-switching");
     theme = theme === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("iridium-playground-theme", theme);
+    window.setTimeout(() => {
+      document.documentElement.classList.remove("theme-switching");
+    }, 50);
   }
 
   async function execute(source: string) {
@@ -157,7 +161,7 @@
 </svelte:head>
 
 <main class="mx-auto flex h-screen h-dvh min-h-0 w-full max-w-playground flex-col overflow-hidden bg-transparent px-2 pt-1.5 pb-2 max-app:px-2.5 max-app:pt-2 max-app:pb-2.5 max-mobile:p-1.5" data-theme={theme}>
-  <TopBar {theme} {status} onToggleTheme={toggleTheme} />
+  <TopBar {theme} onToggleTheme={toggleTheme} />
 
   <div class="grid min-h-0 flex-1 grid-cols-playground gap-2 max-app:grid-cols-1 max-app:grid-rows-2 max-app:gap-3">
     <Pane title="Code" ariaLabel="Code editor">
@@ -177,19 +181,20 @@
     <Pane
       title={resultsTab === "results" ? "Results" : "Help"}
       ariaLabel={resultsTab === "results" ? "Results panel" : "Help panel"}
+      status={resultsTab === "results" ? status : undefined}
       scrollable
       bind:element={resultsPane}
     >
       {#snippet headerActions()}
         <Tabs.Root
           bind:value={resultsTab}
-          class="flex items-center rounded-panel border border-tag-border bg-surface-soft p-px"
+          class="tab-switcher flex items-center rounded-panel border border-tag-border bg-surface-soft p-px"
           aria-label="Results panel views"
         >
           <Tabs.List class="flex items-center gap-px">
             <Tabs.Trigger
               value="results"
-              class={`min-h-6.25 rounded-[3px] px-2 text-[10px] hover:text-primary ${
+              class={`tab-switcher-trigger min-h-6.25 rounded-[3px] px-2 text-[10px] hover:text-primary ${
                 theme === "dark"
                   ? "font-medium text-secondary data-[state=active]:bg-tag-bg data-[state=active]:font-semibold data-[state=active]:text-primary"
                   : "bg-tag-bg font-semibold text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:text-secondary"
@@ -200,7 +205,7 @@
             </Tabs.Trigger>
             <Tabs.Trigger
               value="help"
-              class={`min-h-6.25 rounded-[3px] px-2 text-[10px] hover:text-primary ${
+              class={`tab-switcher-trigger min-h-6.25 rounded-[3px] px-2 text-[10px] hover:text-primary ${
                 theme === "dark"
                   ? "font-medium text-secondary data-[state=active]:bg-tag-bg data-[state=active]:font-semibold data-[state=active]:text-primary"
                   : "bg-tag-bg font-semibold text-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:text-secondary"
@@ -226,3 +231,30 @@
     </Pane>
   </div>
 </main>
+
+<style>
+  :global(.tab-switcher-trigger) {
+    transition:
+      background-color 140ms ease-out,
+      color 140ms ease-out,
+      transform 140ms ease-out;
+  }
+
+  :global(.tab-switcher-trigger:active) {
+    transform: scale(0.96);
+  }
+
+  :global(.theme-switching),
+  :global(.theme-switching *) {
+    transition:
+      background-color 0s,
+      border-color 0s ease,
+      color 0s !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.tab-switcher-trigger) {
+      transition: none;
+    }
+  }
+</style>
