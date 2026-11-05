@@ -53,7 +53,7 @@ Demo.plot(modifiedResults, "With modified state");
     name: "Loading SBML from Biomodels",
     source: `// Fetch an SBML model from the Biomodels repository.
 // "await" pauses this example until the web request has finished.
-const resp = await fetch("https://raw.githubusercontent.com/sys-bio/BiomodelsStore/refs/heads/main/biomodels/BIOMD0000000042/BIOMD0000000042_url.xml");
+const resp = await fetch("https://www.biomodels.org/services/download/get-files/MODEL6622455387/4/BIOMD0000000042_url.xml");
 // Read the downloaded response as text because load() expects an SBML string.
 const sbml = await resp.text();
 
